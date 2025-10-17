@@ -1,4 +1,4 @@
-package waterton;
+package fracking;
 
 
 import java.nio.file.*;
@@ -42,11 +42,7 @@ public class Main {
 
         if (height[0] > height[1]){
             return 0;
-        } else if (height[0] == height[1]){
-            if (water[0] > water[1]){
-                return 0;
-            }
-        }  return 1;
+        } else return 1;
 
     }
 

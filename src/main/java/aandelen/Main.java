@@ -34,10 +34,13 @@ public class Main {
         if (!isWin(input, 0)) return startAmount;
 
         int[][] transactions = transaction(input, startAmount);
+
         for (int i = 0; i < transactions.length; i++){
             if (transactions[i][0] == 0 && transactions[i][1] == 0) break;
             System.out.println("Buy at: " + transactions[i][0] + " Sell at: " + transactions[i][1]);
+            System.out.println("Amount before transaction: " + startAmount);
             startAmount = completeTransaction(transactions[i][0], transactions[i][1], startAmount);
+            System.out.println("Current amount: " + startAmount);
         }
 
         return startAmount;
@@ -85,8 +88,9 @@ public class Main {
     public static int[][] transaction(int[] input, int amount){
         int[][] transactions = new int[input.length / 2][2];
         int startpoint = 0;
+        int amountTransactions = 0;
+
         while (isWin(input, startpoint)) {
-            int amountTransactions = 0;
             int indexBuy = findBuyPoint(input, amount, startpoint);
             if (indexBuy == -1) break;
             int indexSell = findSellingPoint(input, indexBuy + 1);

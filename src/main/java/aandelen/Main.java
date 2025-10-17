@@ -19,9 +19,10 @@ public class Main {
             int[] events = new int[lengthArray];
             String[] parts = lines.get(index++).split(" ");
             events = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
-            System.out.println(calculate(events, startAmount));
-        }
 
+            System.out.print(calculate(events, startAmount));
+            System.out.println();
+        }
 
 
     }
@@ -33,11 +34,10 @@ public class Main {
         if (!isWin(input, 0)) return startAmount;
 
         int[][] transactions = transaction(input, startAmount);
-
         for (int i = 0; i < transactions.length; i++){
             if (transactions[i][0] == 0 && transactions[i][1] == 0) break;
-            startAmount -= transactions[i][0];
-            startAmount += transactions[i][1];
+            System.out.println("Buy at: " + transactions[i][0] + " Sell at: " + transactions[i][1]);
+            startAmount = completeTransaction(transactions[i][0], transactions[i][1], startAmount);
         }
 
         return startAmount;
@@ -53,8 +53,10 @@ public class Main {
     }
 
     public static int findBuyPoint(int[] input, int amount, int startpoint){
-        for (int i = startpoint; i < input.length - 1; i ++){
-            if(input[i] < input[i++] && input[i] <= amount){
+
+        for (int i = startpoint; i < input.length; i++){
+            int nextIndex = (i + 1) % input.length;
+            if(input[i] < input[nextIndex] && input[i] <= amount){
                 return i;
             }
         }
@@ -73,10 +75,17 @@ public class Main {
         return highestIndex;
     }
 
+    public static int completeTransaction(int buy, int sell, int money){
+        int stocks = money / buy;
+        money = money % buy;
+        money += stocks * sell;
+        return money;
+    }
+
     public static int[][] transaction(int[] input, int amount){
         int[][] transactions = new int[input.length / 2][2];
         int startpoint = 0;
-        while (true){
+        while (isWin(input, startpoint)) {
             int amountTransactions = 0;
             int indexBuy = findBuyPoint(input, amount, startpoint);
             if (indexBuy == -1) break;

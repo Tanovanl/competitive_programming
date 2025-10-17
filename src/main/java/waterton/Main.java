@@ -50,19 +50,35 @@ public class Main {
 
     }
 
+    public static int hoogstewater(int[] input){
+        int[] water = { input[0], input[1] };
+
+
+        if (water[0] > water[1]){
+            return 0;
+        }   return 1;
+    }
+
+    public static int reverse(int input){
+        if(input == 1){
+            return 0;
+        } else return 1;
+    }
+
     public static int[] waterdoorlopen(int[] input){
         int hoogste = hoogsteBuis(input);
-        int lowest = 0;
-        if (hoogste == 0){
-            lowest = 1;
-        }
+        int hoogstewater = hoogstewater(input);
+
+        int lowest = reverse(hoogste);
+        int lowestwater = reverse(hoogstewater);
+
         int[] water = { input[0], input[1] };
         int[] height = { input[2], input[3] };
 
-        while(water[hoogste] > height[hoogste]){
-            if (water[lowest] < water[hoogste]){
-                water[lowest]++;
-                water[hoogste]--;
+        while(water[hoogstewater] > height[hoogste]){
+            if (water[lowestwater] < water[hoogstewater]){
+                water[lowestwater]++;
+                water[hoogstewater]--;
             } else return water;
         }
 

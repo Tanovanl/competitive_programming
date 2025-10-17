@@ -1,69 +1,98 @@
 package fracking;
 
-
 import java.nio.file.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get("src/waterton.txt"));
+        List<String> lines = Files.readAllLines(Paths.get("src/fracking.txt"));
         int index = 0;
 
         int amount = Integer.parseInt(lines.get(index++));
 
-        for (int i = 0; i < amount; i++){
-            // Convert ArrayList to int[]
-            ArrayList<String> tons = new ArrayList<>();
-            String[] parts = lines.get(index++).split(" ");
-            for (int j = 0; j < parts.length; j++) {
-                tons.add(parts[j]);
-            }
-            int[] tonsArray = tons.stream().mapToInt(Integer::parseInt).toArray();
-            int[] result = waterdoorlopen(tonsArray);
-            if (result[0] == result[1]){
-                System.out.println("gelijk");
-            } else {
-                System.out.println(result[0] + " " + result[1]);
+
+
+        for (int iterations = 0; iterations < amount; iterations++){
+
+            int height = Integer.parseInt(lines.get(index++));
+            int width = Integer.parseInt(lines.get(index++));
+            char[][] grond = new char[height][width];
+            for (int i = 0; i < height; i++) {
+                String line = lines.get(index++);
+                grond[i] = line.toCharArray();
+                // Optional: print the row
             }
 
-        }
+//            System.out.println(calculate(grond));
 
+            System.out.println(calculate(grond));
+        }
 
 
     }
 
-    public static int hoogsteBuis(int[] input){
-        int[] water = { input[0], input[1] };
-        int[] height = { input[2], input[3] };
+    public static int calculate(char[][] input){
+        char[][] newGround = input;
 
+        int amountOfDays = 0;
 
-        if (height[0] > height[1]){
-            return 0;
-        } else return 1;
-
-    }
-
-    public static int[] waterdoorlopen(int[] input){
-        int hoogste = hoogsteBuis(input);
-        int lowest = 0;
-        if (hoogste == 0){
-            lowest = 1;
-        }
-        int[] water = { input[0], input[1] };
-        int[] height = { input[2], input[3] };
-
-        while(water[hoogste] > height[hoogste]){
-            if (water[lowest] < water[hoogste]){
-                water[lowest]++;
-                water[hoogste]--;
-            } else return water;
+        if (checkInstorting(newGround)){
+            return amountOfDays;
         }
 
-        return water;
+        while(true){
+            char[][] nextGround = deepCopy(newGround);
+            for (int i = 0; i < newGround.length; i++) {
+                for (int j = 0; j < newGround[i].length; j++) {
+                    if (newGround[i][j] == '.') {
+                        if (i - 1 >= 0) nextGround[i - 1][j] = '.';
+                        if (i + 1 < newGround.length) nextGround[i + 1][j] = '.';
+                        if (j - 1 >= 0) nextGround[i][j - 1] = '.';
+                        if (j + 1 < newGround[i].length) nextGround[i][j + 1] = '.';
+                    }
+                }
+            }
+            newGround = nextGround;
+
+            amountOfDays++;
+//            print(newGround);
+            if (checkInstorting(newGround)){
+                return amountOfDays;
+            }
+        }
     }
 
+
+
+    public static boolean checkInstorting(char[][] input){
+        for (int i = 0; i < input.length; i++) {
+            boolean allDots = true;
+            for (int j = 0; j < input[i].length; j++) {
+                if (input[i][j] != '.') {
+                    allDots = false;
+                    break;
+                }
+            }
+            if (allDots) return true;
+        }
+        return false;
+    }
+
+    public static void print(char[][] input) {
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+                System.out.print(input[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static char[][] deepCopy(char[][] original) {
+        char[][] copy = new char[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            copy[i] = original[i].clone();
+        }
+        return copy;
+    }
 }
-

@@ -1,0 +1,98 @@
+package aandelen;
+
+
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get("src/aandelen.txt"));
+        int index = 0;
+
+        int amount = Integer.parseInt(lines.get(index++));
+
+        for (int i = 0; i < amount; i++){
+            int startAmount = Integer.parseInt(lines.get(index++));
+            int lengthArray = Integer.parseInt(lines.get(index++));
+            int[] events = new int[lengthArray];
+            String[] parts = lines.get(index++).split(" ");
+            events = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
+            System.out.println(calculate(events, startAmount));
+        }
+
+
+
+    }
+
+    public static int calculate(int[] input, int startAmount) {
+//        System.out.println(Arrays.toString(input));
+//        System.out.println(startAmount);
+
+        if (!isWin(input, 0)) return startAmount;
+
+        int[][] transactions = transaction(input, startAmount);
+
+        for (int i = 0; i < transactions.length; i++){
+            if (transactions[i][0] == 0 && transactions[i][1] == 0) break;
+            startAmount -= transactions[i][0];
+            startAmount += transactions[i][1];
+        }
+
+        return startAmount;
+
+
+    }
+
+    public static boolean isWin(int[] input, int startpoint){
+        for (int i = startpoint; i < input.length - 1; i++){
+            if(input[i] < input[i + 1]) return true;
+        }
+        return false;
+    }
+
+    public static int findBuyPoint(int[] input, int amount, int startpoint){
+        for (int i = startpoint; i < input.length - 1; i ++){
+            if(input[i] < input[i++] && input[i] <= amount){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int findSellingPoint(int[] input, int startpoint){
+        int highestIndex = startpoint;
+        int highest = input[startpoint];
+        for (int i = startpoint + 1; i < input.length - 1; i ++){
+            if(input[i] > highest){
+                highestIndex = i;
+                highest = input[i];
+            }
+        }
+        return highestIndex;
+    }
+
+    public static int[][] transaction(int[] input, int amount){
+        int[][] transactions = new int[input.length / 2][2];
+        int startpoint = 0;
+        while (true){
+            int amountTransactions = 0;
+            int indexBuy = findBuyPoint(input, amount, startpoint);
+            if (indexBuy == -1) break;
+            int indexSell = findSellingPoint(input, indexBuy + 1);
+
+            startpoint = indexSell + 1;
+            int[] transaction = { input[indexBuy], input[indexSell] };
+            transactions[amountTransactions] = transaction;
+            amountTransactions++;
+            if (!isWin(input, startpoint)) {
+                return transactions;
+        }
+
+    }
+    return transactions;}
+
+
+}
+

@@ -13,13 +13,25 @@ public class Main {
 
         int amount = Integer.parseInt(lines.get(index++));
 
-        for (int i = 0; i < amount; i++){
+        // Inside main method, before parsing lengthArray and events
+        for (int i = 0; i < amount; i++) {
             int startAmount = Integer.parseInt(lines.get(index++));
+            String lengthLine = lines.get(index);
+            if (lengthLine == null || lengthLine.trim().isEmpty()) {
+                System.out.println(startAmount); // Print start amount if line is empty
+                index++; // Skip to next line if empty
+                continue;
+            }
             int lengthArray = Integer.parseInt(lines.get(index++));
-            int[] events = new int[lengthArray];
-            String[] parts = lines.get(index++).split(" ");
-            events = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
+            String eventLine = lines.get(index);
+            if (lengthArray == 0 || eventLine == null || eventLine.trim().isEmpty()) {
+                System.out.println(startAmount); // Print start amount if line is empty
 
+                index++; // Skip to next line if empty
+                continue;
+            }
+            int[] events = Arrays.stream(eventLine.split(" ")).mapToInt(Integer::parseInt).toArray();
+            index++;
             System.out.print(calculate(events, startAmount));
             System.out.println();
         }
@@ -28,8 +40,8 @@ public class Main {
     }
 
     public static int calculate(int[] input, int startAmount) {
-//        System.out.println(Arrays.toString(input));
-//        System.out.println(startAmount);
+//        //System.out.println(Arrays.toString(input));
+//        //System.out.println(startAmount);
 
         if (!isWin(input, 0)) return startAmount;
 
@@ -37,10 +49,10 @@ public class Main {
 
         for (int i = 0; i < transactions.length; i++){
             if (transactions[i][0] == 0 && transactions[i][1] == 0) break;
-            System.out.println("Buy at: " + transactions[i][0] + " Sell at: " + transactions[i][1]);
-            System.out.println("Amount before transaction: " + startAmount);
+            //System.out.println("Buy at: " + transactions[i][0] + " Sell at: " + transactions[i][1]);
+            //System.out.println("Amount before transaction: " + startAmount);
             startAmount = completeTransaction(transactions[i][0], transactions[i][1], startAmount);
-            System.out.println("Current amount: " + startAmount);
+            //System.out.println("Current amount: " + startAmount);
         }
 
         return startAmount;
@@ -89,8 +101,7 @@ public class Main {
         int[][] transactions = new int[input.length / 2][2];
         int startpoint = 0;
         int amountTransactions = 0;
-
-        while (isWin(input, startpoint)) {
+        while (true){
             int indexBuy = findBuyPoint(input, amount, startpoint);
             if (indexBuy == -1) break;
             int indexSell = findSellingPoint(input, indexBuy + 1);
@@ -100,11 +111,12 @@ public class Main {
             transactions[amountTransactions] = transaction;
             amountTransactions++;
             if (!isWin(input, startpoint)) {
-                return transactions;
+                break;
+            }
         }
 
+        return transactions;
     }
-    return transactions;}
 
 
 }
